@@ -5,8 +5,10 @@ services:
       mysql:
         condition: service_healthy
     volumes: ['./python:/code', './secrets:/secrets'] 
-    ports:
-      - '80:5000'
+    environment:
+      API_KEY_FILE: ./secrets/opendota_key.txt
+    secrets:
+      - opendota_key
 
   mysql:
     build: ./mysql/
@@ -31,3 +33,7 @@ secrets:
     file: ./secrets/db_password.txt
   secret_db_root_pw:
     file: ./secrets/db_root_password.txt
+  opendota_key:
+    file: ./secrets/opendota_key.txt
+  discord_test_token:
+    file: ./secrets/discord_test_token.txt
