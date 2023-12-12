@@ -62,12 +62,14 @@ def ingestMatchJson(matchJson, account_id):
             deaths = p["deaths"]
     if matchJson["chat"] is not None:
         for msg in matchJson["chat"]:
-            if msg["player_slot"] == playerSlot:
+            if msg["player_slot"] == playerSlot and msg["type"] != "chatwheel":
                 messages.append(msg["key"])
+    else:
+        return
 
 
     db = getDB()
-    print(f"MatchID : {match_id}\nkills : {kills}\nassists : {assists}\ndeaths : {deaths}")
+    print(f"MatchID : {match_id}\nkills : {kills}\nassists : {assists}\ndeaths : {deaths}\nnum quotes : {len(messages)}")
     match_insert_stmt = """
     INSERT INTO Matches (match_id, kills, assists, deaths)
     VALUES (%s, %s, %s, %s)
@@ -97,5 +99,11 @@ def pullNewMatches(account_id):
     newIDs = getNewMatchIDs(account_id)
 
     for id in newIDs:
-        matchJson = getMatch(id)
-        ingestMatchJson(matchJson, account_id)
+        try:
+            matchJson = getMatch(id)
+            ingestMatchJson(matchJson, account_id)
+        except:
+            pass
+
+if __name__ == "__main__":
+    pullNewMatches(80597991)
